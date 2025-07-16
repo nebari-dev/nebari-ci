@@ -49,6 +49,14 @@ jobs:
           path: nebari
           fetch-depth: 0
 
+      - name: Get current AMI from cirun.yml
+        id: current-ami
+        run: |
+          cd nebari
+          CURRENT_AMI=$(grep "machine_image:" .cirun.yml | sed 's/.*machine_image: //')
+          echo "current_ami=$CURRENT_AMI" >> $GITHUB_OUTPUT
+          echo "Current AMI in cirun.yml: $CURRENT_AMI"
+
       - name: Update .cirun.yml with new AMI ID
         run: |
           cd nebari
@@ -77,10 +85,6 @@ jobs:
           echo "ami_description=$AMI_DESCRIPTION" >> $GITHUB_OUTPUT
           echo "creation_date=$CREATION_DATE" >> $GITHUB_OUTPUT
 
-          # Get current AMI ID from cirun.yml
-          cd nebari
-          CURRENT_AMI=$(grep "machine_image:" .cirun.yml | sed 's/.*machine_image: //')
-          echo "current_ami=$CURRENT_AMI" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
@@ -95,7 +99,7 @@ jobs:
             This PR updates the cirun.io AMI configuration with a newly built AMI.
 
             **Changes:**
-            - **Previous AMI:** `${{ steps.ami-details.outputs.current_ami }}`
+            - **Previous AMI:** `${{ steps.current-ami.outputs.current_ami }}`
             - **New AMI:** `${{ steps.get-ami.outputs.ami_id }}`
             - **AMI Name:** `${{ steps.ami-details.outputs.ami_name }}`
             - **Created:** `${{ steps.ami-details.outputs.creation_date }}`
