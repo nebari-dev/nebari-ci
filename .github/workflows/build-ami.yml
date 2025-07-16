@@ -1,43 +1,13 @@
-name: Packer Lint and Build AMI
+name: Build AMI
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'packer/**'
-  pull_request:
-    paths:
-      - 'packer/**'
   workflow_dispatch:
 
 env:
   AWS_REGION: us-west-2
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Packer
-        uses: hashicorp/setup-packer@main
-        with:
-          version: latest
-
-      - name: Initialize Packer
-        run: |
-          cd packer
-          packer init .
-
-      - name: Format and validate Packer template
-        run: |
-          cd packer
-          packer fmt -check .
-          packer validate .
-
   build-ami:
-    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -62,6 +32,12 @@ jobs:
         run: |
           cd packer
           packer init .
+
+      - name: Format and validate Packer template
+        run: |
+          cd packer
+          packer fmt -check .
+          packer validate .
 
       - name: Build AMI
         id: build
