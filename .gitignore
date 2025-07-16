@@ -1,0 +1,25 @@
+# Packer
+packer/builds/
+*.pkrvars.hcl
+packer_cache/
+crash.log
+
+# AWS
+.aws/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp

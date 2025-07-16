@@ -1,0 +1,58 @@
+name: Build AMI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packer/**'
+  pull_request:
+    paths:
+      - 'packer/**'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-west-2
+
+jobs:
+  build-ami:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          version: latest
+
+      - name: Initialize Packer
+        run: |
+          cd packer
+          packer init .
+
+      - name: Validate Packer template
+        run: |
+          cd packer
+          packer validate .
+
+      - name: Build AMI
+        run: |
+          cd packer
+          packer build \
+            -var "region=${{ env.AWS_REGION }}" \
+            -var "ami_name=nebari-cirun-runner-ubuntu24" \
+            .
+
+      - name: Output AMI ID
+        run: |
+          echo "AMI built successfully in region ${{ env.AWS_REGION }}"
