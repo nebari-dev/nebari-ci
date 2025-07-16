@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       ami_id:
-        description: 'AMI ID to update in nebari .cirun.yml'
+        description: 'AMI ID to update in nebari .cirun.yml (optional - will use latest if empty)'
         required: false
         type: string
 
