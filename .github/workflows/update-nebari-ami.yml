@@ -12,6 +12,7 @@ jobs:
   update-ami:
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       contents: read
       pull-requests: write
 
