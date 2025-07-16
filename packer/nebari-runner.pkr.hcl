@@ -23,19 +23,11 @@ variable "ami_name" {
 }
 
 source "amazon-ebs" "ubuntu" {
-  ami_name      = "${var.ami_name}-{{timestamp}}"
+  ami_name      = "${var.ami_name}-{{isotime \"20060102-1504\"}}"
   instance_type = var.instance_type
   region        = var.region
 
-  source_ami_filter {
-    filters = {
-      name                = "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*"
-      root-device-type    = "ebs"
-      virtualization-type = "hvm"
-    }
-    most_recent = true
-    owners      = ["099720109477"] # Canonical
-  }
+  source_ami = "ami-05f991c49d264708f" # Ubuntu 24.04 LTS us-west-2
 
   ssh_username = "ubuntu"
 
@@ -54,11 +46,19 @@ build {
   ]
 
   provisioner "shell" {
+    script = "scripts/disable-upgrades.sh"
+  }
+
+  provisioner "shell" {
     script = "scripts/install-docker.sh"
   }
 
   provisioner "shell" {
     script = "scripts/setup-runner.sh"
+  }
+
+  provisioner "shell" {
+    script = "scripts/preinstall-tools.sh"
   }
 
   provisioner "shell" {
