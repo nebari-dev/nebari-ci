@@ -80,10 +80,14 @@ jobs:
           AMI_NAME=$(echo $AMI_INFO | jq -r '.Name')
           AMI_DESCRIPTION=$(echo $AMI_INFO | jq -r '.Description // "No description available"')
           CREATION_DATE=$(echo $AMI_INFO | jq -r '.CreationDate')
+          BUILD_JOB_URL=$(echo $AMI_INFO | jq -r '.Tags[]? | select(.Key == "BuildJob") | .Value // "Not available"')
+          COMMIT_HASH=$(echo $AMI_INFO | jq -r '.Tags[]? | select(.Key == "CommitHash") | .Value // "Not available"')
 
           echo "ami_name=$AMI_NAME" >> $GITHUB_OUTPUT
           echo "ami_description=$AMI_DESCRIPTION" >> $GITHUB_OUTPUT
           echo "creation_date=$CREATION_DATE" >> $GITHUB_OUTPUT
+          echo "build_job_url=$BUILD_JOB_URL" >> $GITHUB_OUTPUT
+          echo "commit_hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
 
 
       - name: Create Pull Request
@@ -92,7 +96,7 @@ jobs:
           token: ${{ secrets.NEBARI_PAT }}
           path: nebari
           commit-message: "Update cirun AMI to ${{ steps.get-ami.outputs.ami_id }}"
-          title: "Update cirun AMI to ${{ steps.get-ami.outputs.ami_id }}"
+          title: "Update cirun AMI to `${{ steps.get-ami.outputs.ami_id }}`"
           body: |
             ## 🚀 AMI Update
 
@@ -104,6 +108,8 @@ jobs:
             - **AMI Name:** `${{ steps.ami-details.outputs.ami_name }}`
             - **Created:** `${{ steps.ami-details.outputs.creation_date }}`
             - **Description:** `${{ steps.ami-details.outputs.ami_description }}`
+            - **Build Job:** [${{ steps.ami-details.outputs.build_job_url }}](${{ steps.ami-details.outputs.build_job_url }})
+            - **Commit Hash:** [`${{ steps.ami-details.outputs.commit_hash }}`](https://github.com/${{ github.repository }}/commit/${{ steps.ami-details.outputs.commit_hash }})
 
             **Base Configuration:**
             - Ubuntu 24.04 LTS (us-west-2)

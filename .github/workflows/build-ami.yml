@@ -43,9 +43,12 @@ jobs:
         id: build
         run: |
           cd packer
+          BUILD_JOB_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           if ! packer build \
             -var "region=${{ env.AWS_REGION }}" \
             -var "ami_name=nebari-cirun-runner-ubuntu24" \
+            -var "build_job_url=$BUILD_JOB_URL" \
+            -var "commit_hash=${{ github.sha }}" \
             . | tee build.log; then
             echo "❌ Packer build failed"
             exit 1
@@ -58,6 +61,7 @@ jobs:
             exit 1
           fi
           echo "ami_id=$AMI_ID" >> $GITHUB_OUTPUT
+          echo "build_job_url=$BUILD_JOB_URL" >> $GITHUB_OUTPUT
 
       - name: Generate Build Summary
         if: success()

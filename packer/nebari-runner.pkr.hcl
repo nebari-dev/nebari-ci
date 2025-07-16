@@ -22,6 +22,16 @@ variable "ami_name" {
   default = "nebari-cirun-runner-ubuntu24"
 }
 
+variable "build_job_url" {
+  type    = string
+  default = "manual-build"
+}
+
+variable "commit_hash" {
+  type    = string
+  default = "unknown"
+}
+
 source "amazon-ebs" "ubuntu" {
   ami_name      = "${var.ami_name}-{{isotime \"20060102-1504\"}}"
   instance_type = var.instance_type
@@ -56,6 +66,8 @@ source "amazon-ebs" "ubuntu" {
     Built_With  = "Packer"
     Purpose     = "cirun.io runners"
     Project     = "nebari-cirun-images"
+    BuildJob    = var.build_job_url
+    CommitHash  = var.commit_hash
   }
 }
 
