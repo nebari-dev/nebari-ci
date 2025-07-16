@@ -40,6 +40,7 @@ The AMI includes:
 1. AWS IAM role configured for GitHub Actions with EC2 permissions
 2. GitHub repository secrets:
    - `AWS_ROLE_ARN`: ARN of the IAM role for building AMIs
+   - `NEBARI_PAT`: Personal Access Token for nebari repository (for auto-updates)
 
 ### Manual Build
 
@@ -52,10 +53,54 @@ packer build .
 
 ### Automated Build
 
-AMIs are automatically built when:
-- Changes are pushed to the main branch
-- Pull requests modify files in the `packer/` directory
-- Manually triggered via workflow dispatch
+**Linting:** Runs automatically on push/PR to main branch for `packer/` changes
+
+**Building:** Only runs on manual trigger via workflow dispatch
+
+## How to Build and Deploy a New AMI
+
+### Step 1: Build the AMI
+
+1. Go to the [Actions tab](../../actions) in this repository
+2. Click on "Build AMI" workflow
+3. Click "Run workflow" button
+4. Wait for the build to complete (~10-15 minutes)
+5. Note the AMI ID from the build summary
+
+### Step 2: Deploy to Nebari
+
+**Option A: Automatic Update (Recommended)**
+1. Go to the [Actions tab](../../actions) in this repository
+2. Click on "Update Nebari AMI" workflow
+3. Click "Run workflow" button
+4. Either:
+   - Leave AMI ID empty (will use latest built AMI)
+   - Or enter specific AMI ID from Step 1
+5. This will create a PR in the nebari repository
+
+**Option B: Manual Update**
+1. Go to the [nebari repository](https://github.com/nebari-dev/nebari)
+2. Edit the `.cirun.yml` file
+3. Update the `machine_image` field with the new AMI ID:
+   ```yaml
+   machine_image: ami-xxxxxxxxx  # Replace with new AMI ID
+   ```
+4. Create a pull request with your changes
+
+### Step 3: Monitor and Test
+
+1. Once the PR is merged in nebari repository
+2. New CI runs will use the updated AMI
+3. Monitor the first few CI runs to ensure everything works correctly
+
+### Step 4: Clean Up (Optional)
+
+Old AMIs are automatically cleaned up weekly, keeping only the 5 most recent images. To manually trigger cleanup:
+
+1. Go to the [Actions tab](../../actions) in this repository
+2. Click on "Cleanup Old AMIs" workflow
+3. Click "Run workflow" button
+4. Optionally adjust the number of AMIs to keep (default: 5)
 
 ## IAM Permissions
 
