@@ -40,9 +40,10 @@ jobs:
           cd packer
           packer init .
 
-      - name: Validate Packer template
+      - name: Format and validate Packer template
         run: |
           cd packer
+          packer fmt -check .
           packer validate .
 
       - name: Build AMI
