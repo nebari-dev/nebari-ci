@@ -38,6 +38,13 @@ source "amazon-ebs" "ubuntu" {
     delete_on_termination = true
   }
 
+  ami_block_device_mappings {
+    device_name = "/dev/sda1"
+    volume_size = 100
+    volume_type = "gp3"
+    delete_on_termination = true
+  }
+
   tags = {
     Name        = "Nebari CI Runner"
     Environment = "ci"
