@@ -43,16 +43,24 @@ jobs:
         id: build
         run: |
           cd packer
-          packer build \
+          if ! packer build \
             -var "region=${{ env.AWS_REGION }}" \
             -var "ami_name=nebari-cirun-runner-ubuntu24" \
-            . | tee build.log
+            . | tee build.log; then
+            echo "❌ Packer build failed"
+            exit 1
+          fi
 
           # Extract AMI ID from packer output
           AMI_ID=$(grep -oP 'ami-[a-z0-9]+' build.log | tail -1)
+          if [ -z "$AMI_ID" ]; then
+            echo "❌ Failed to extract AMI ID from build output"
+            exit 1
+          fi
           echo "ami_id=$AMI_ID" >> $GITHUB_OUTPUT
 
       - name: Generate Build Summary
+        if: success()
         run: |
           echo "# 🚀 AMI Build Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
