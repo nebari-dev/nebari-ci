@@ -35,6 +35,8 @@ source "amazon-ebs" "ubuntu" {
     device_name           = "/dev/sda1"
     volume_size           = 100
     volume_type           = "gp3"
+    iops                  = 6000
+    throughput            = 250
     delete_on_termination = true
   }
 
@@ -42,6 +44,8 @@ source "amazon-ebs" "ubuntu" {
     device_name           = "/dev/sda1"
     volume_size           = 100
     volume_type           = "gp3"
+    iops                  = 6000
+    throughput            = 250
     delete_on_termination = true
   }
 
