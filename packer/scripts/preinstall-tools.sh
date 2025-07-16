@@ -42,9 +42,9 @@ rm miniconda.sh
 # Add conda to PATH for ubuntu user
 echo 'export PATH="/home/ubuntu/miniconda3/bin:$PATH"' >> /home/ubuntu/.bashrc
 
-# Install pip and Python packages
-sudo apt-get install -y python3-pip
-pip3 install --user playwright
+# Install pipx for Python package management
+sudo apt-get install -y python3-pip python3-venv pipx
+pipx install playwright
 
 # Set up inotify limits for kind (from workflow)
 echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
