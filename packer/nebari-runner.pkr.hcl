@@ -55,6 +55,7 @@ source "amazon-ebs" "ubuntu" {
     OS_Version  = "Ubuntu 24.04"
     Built_With  = "Packer"
     Purpose     = "cirun.io runners"
+    Project     = "nebari-cirun-images"
   }
 }
 

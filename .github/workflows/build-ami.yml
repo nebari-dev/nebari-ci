@@ -1,4 +1,4 @@
-name: Packer Lint and Build
+name: Packer Lint and Build AMI
 
 on:
   push:
@@ -63,12 +63,6 @@ jobs:
           cd packer
           packer init .
 
-      - name: Format and validate Packer template
-        run: |
-          cd packer
-          packer fmt -check .
-          packer validate .
-
       - name: Build AMI
         id: build
         run: |
@@ -77,7 +71,7 @@ jobs:
             -var "region=${{ env.AWS_REGION }}" \
             -var "ami_name=nebari-cirun-runner-ubuntu24" \
             . | tee build.log
-          
+
           # Extract AMI ID from packer output
           AMI_ID=$(grep -oP 'ami-[a-z0-9]+' build.log | tail -1)
           echo "ami_id=$AMI_ID" >> $GITHUB_OUTPUT

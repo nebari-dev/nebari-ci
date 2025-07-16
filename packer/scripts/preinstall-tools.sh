@@ -46,6 +46,26 @@ echo 'export PATH="/home/ubuntu/miniconda3/bin:$PATH"' >> /home/ubuntu/.bashrc
 sudo apt-get install -y python3-pip python3-venv pipx
 pipx install playwright
 
+# Install Playwright system dependencies
+sudo apt-get install -y \
+    libatk1.0-0t64 \
+    libatk-bridge2.0-0t64 \
+    libatspi2.0-0t64 \
+    libxcomposite1 \
+    libxdamage1 \
+    libasound2t64 \
+    libdrm2 \
+    libxss1 \
+    libgbm1 \
+    libnss3 \
+    libxrandr2 \
+    libasound2 \
+    libpangocairo-1.0-0 \
+    libatk1.0-0 \
+    libcairo-gobject2 \
+    libgtk-3-0 \
+    libgdk-pixbuf2.0-0
+
 # Set up inotify limits for kind (from workflow)
 echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
 echo "fs.inotify.max_user_instances=512" | sudo tee -a /etc/sysctl.conf
