@@ -1,4 +1,4 @@
-# Nebari CI Infrastructure
+# Nebari CI AMI Image
 
 This repository contains the infrastructure code for building custom Amazon Machine Images (AMIs) used by cirun.io to spin up on-demand and spot runners on AWS for Nebari's CI pipeline.
 
