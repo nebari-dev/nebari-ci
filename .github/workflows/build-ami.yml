@@ -70,13 +70,39 @@ jobs:
           packer validate .
 
       - name: Build AMI
+        id: build
         run: |
           cd packer
           packer build \
             -var "region=${{ env.AWS_REGION }}" \
             -var "ami_name=nebari-cirun-runner-ubuntu24" \
-            .
+            . | tee build.log
+          
+          # Extract AMI ID from packer output
+          AMI_ID=$(grep -oP 'ami-[a-z0-9]+' build.log | tail -1)
+          echo "ami_id=$AMI_ID" >> $GITHUB_OUTPUT
 
-      - name: Output AMI ID
+      - name: Generate Build Summary
         run: |
-          echo "AMI built successfully in region ${{ env.AWS_REGION }}"
+          echo "# 🚀 AMI Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Build Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Region:** ${{ env.AWS_REGION }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **AMI ID:** ${{ steps.build.outputs.ami_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **AMI Name:** nebari-cirun-runner-ubuntu24-$(date +%Y%m%d-%H%M)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Base Image:** ami-05f991c49d264708f (Ubuntu 24.04 LTS)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Pre-installed Tools" >> $GITHUB_STEP_SUMMARY
+          echo "- Docker & Docker Compose" >> $GITHUB_STEP_SUMMARY
+          echo "- Kubernetes tools (kubectl, kind, k9s)" >> $GITHUB_STEP_SUMMARY
+          echo "- Node.js 20 & npm" >> $GITHUB_STEP_SUMMARY
+          echo "- Miniconda (latest)" >> $GITHUB_STEP_SUMMARY
+          echo "- Playwright (via pipx)" >> $GITHUB_STEP_SUMMARY
+          echo "- AWS CLI v2" >> $GITHUB_STEP_SUMMARY
+          echo "- Common utilities (jq, hub, git, curl, wget)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Usage" >> $GITHUB_STEP_SUMMARY
+          echo "Use this AMI ID \`${{ steps.build.outputs.ami_id }}\` in your cirun.io configuration for ${{ env.AWS_REGION }}" >> $GITHUB_STEP_SUMMARY
