@@ -1,4 +1,4 @@
-name: Build AMI
+name: Packer Lint and Build
 
 on:
   push:

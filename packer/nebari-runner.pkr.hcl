@@ -36,6 +36,7 @@ source "amazon-ebs" "ubuntu" {
     Environment = "ci"
     OS_Version  = "Ubuntu 24.04"
     Built_With  = "Packer"
+    Purpose     = "cirun.io runners"
   }
 }
 
