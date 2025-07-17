@@ -6,6 +6,10 @@ echo "Installing CI tools for Nebari testing..."
 # Update package index
 sudo apt-get update
 
+# Create runnerx user (matching CI runner environment)
+sudo useradd -m -s /bin/bash runnerx
+sudo usermod -aG docker runnerx
+
 # Install essential tools from workflow analysis
 sudo apt-get install -y \
     jq \
@@ -34,17 +38,16 @@ sudo mv k9s /usr/local/bin/
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
-# Install miniconda (latest as specified in workflow)
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-bash miniconda.sh -b -p /home/ubuntu/miniconda3
-rm miniconda.sh
+# Install miniconda for runnerx user (matching CI runner environment)
+sudo -u runnerx wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /home/runnerx/miniconda.sh
+sudo -u runnerx bash /home/runnerx/miniconda.sh -b -p /home/runnerx/miniconda3
+sudo rm /home/runnerx/miniconda.sh
 
-# Add conda to PATH for ubuntu user
-echo 'export PATH="/home/ubuntu/miniconda3/bin:$PATH"' >> /home/ubuntu/.bashrc
+# Add conda to PATH for runnerx user
+echo 'export PATH="/home/runnerx/miniconda3/bin:$PATH"' | sudo tee -a /home/runnerx/.bashrc
 
 # Install pipx for Python package management
 sudo apt-get install -y python3-pip python3-venv pipx
-pipx install playwright
 
 # Install Playwright system dependencies
 sudo apt-get install -y \
